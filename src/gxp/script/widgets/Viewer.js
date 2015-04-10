@@ -578,7 +578,68 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
 
     // function called within initPortal
     initAboutButton: function() {
-        //todo
+
+        // text snippets used in about section
+        var appInfoText = "WebGIS";
+        var mapInfoText = "Map info";
+        var aboutThisMapText = "About this map";
+        var titleText = "Title";
+        var descriptionText = "Description";
+        var contactText ="Contact";
+        var aboutText = "About GeoExplorer";
+        var about = {
+            title: appInfoText,
+            abstract: ""
+        };
+
+        // create button object
+        new Ext.Button({
+            id: "aboutbutton",  // linked to in app.js in the tools section
+            text: appInfoText,
+            iconCls: "icon-geoexplorer",
+            handler: displayAboutInfos,
+            scope: this
+        });
+
+        // define handler function
+        function displayAboutInfos() {
+
+            // define map info ("map info")
+            var mapInfo = new Ext.Panel({
+                title: mapInfoText,
+                html: '<div class="gx-info-panel">' +
+                      '<h2>'+titleText+'</h2><p>' + about.title +
+                      '</p><h2>'+descriptionText+'</h2><p>' + about.abstract +
+                      '</p> <h2>'+contactText+'</h2><p>' + about.contact +'</p></div>',
+                height: 'auto',
+                width: 'auto'
+            });
+
+            // define geoexplorer/boundless_sdk info page
+            var appInfo = new Ext.Panel({
+                title: aboutText,
+                html: "<iframe style='border: none; height: 100%; width: 100%' src='../about.html' frameborder='0' border='0'><a target='_blank' href='../about.html'>"+aboutText+"</a> </iframe>"
+            });
+
+            // define tabs of about window
+            var tabs = new Ext.TabPanel({
+                activeTab: 0,
+                items: [mapInfo, appInfo]
+            });
+
+            // define window in which tabs are displayed
+            var win = new Ext.Window({
+                title: aboutThisMapText,
+                modal: true,
+                layout: "fit",
+                width: 350,
+                height: 350,
+                items: [tabs]
+            });
+
+            // init window
+            win.show();
+        }
     },
 
     // function called within initPortal
