@@ -2,6 +2,7 @@
  * Add all your dependencies here.
  *
  * @require widgets/Viewer.js
+ * @require widgets/ScaleOverlay.js
  * @require plugins/LayerTree.js
  * @require plugins/OLSource.js
  * @require plugins/OSMSource.js
@@ -147,11 +148,21 @@ var app = new gxp.Viewer({
             name: "usa:states",
             selected: true
         }],
-        items: [{
-            xtype: "gx_zoomslider",
-            vertical: true,
-            height: 100
-        }]
+
+        // TOOLS MAP OVERLAY
+        // ------------------
+        items: [
+
+            // zoomslider
+            {
+                xtype: "gx_zoomslider",
+                vertical: true,
+                height: 100
+            },
+            {
+                xtype: "gxp_scaleoverlay"
+            }
+        ]
     }
 
 });
