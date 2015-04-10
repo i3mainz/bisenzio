@@ -13,57 +13,112 @@
  * @require plugins/RemoveLayer.js
  * @require RowExpander.js
  */
+console.log("... start up boundless sdk app!");
 
 var app = new gxp.Viewer({
     portalConfig: {
         layout: "border",
         region: "center",
-        
+
         // by configuring items here, we don't need to configure portalItems
         // and save a wrapping container
-        items: [{
-            id: "centerpanel",
-            xtype: "panel",
-            layout: "fit",
-            region: "center",
-            border: false,
-            items: ["mymap"]
-        }, {
-            id: "westpanel",
-            xtype: "container",
-            layout: "fit",
-            region: "west",
-            width: 200
-        }],
+        items: [
+
+            // top
+            {
+                id: "toppanel",
+                xtype: "panel",
+                height: 27,     // workaround
+                region: "north",
+                tbar: {
+                    items: []
+                }
+            },
+
+            // map area
+            {
+                id: "centerpanel",
+                xtype: "panel",
+                layout: "fit",
+                region: "center",
+                border: false,
+                items: ["mymap"]
+            },
+
+            // left sidebar
+            {
+                id: "westpanel",
+                xtype: "container",
+                layout: "fit",
+                region: "west",
+                width: 200
+            }
+        ],
         bbar: {id: "mybbar"}
     },
-    
-    // configuration of all tool plugins for this application
-    tools: [{
-        ptype: "gxp_layertree",
-        outputConfig: {
-            id: "tree",
-            border: true,
-            tbar: [] // we will add buttons to "tree.bbar" later
+
+
+    // TOOLS
+    // =====
+    tools: [
+
+        // TOOLS WITHIN SIDEBAR
+
+        // layer tree within left panel
+        {
+            ptype: "gxp_layertree",
+            outputConfig: {
+                id: "tree",
+                border: true,
+                tbar: [] // we will add buttons to "tree.bbar" later
+            },
+            outputTarget: "westpanel"
         },
-        outputTarget: "westpanel"
-    }, {
-        ptype: "gxp_addlayers",
-        actionTarget: "tree.tbar"
-    }, {
-        ptype: "gxp_removelayer",
-        actionTarget: ["tree.tbar", "tree.contextMenu"]
-    }, {
-        ptype: "gxp_zoomtoextent",
-        actionTarget: "map.tbar"
-    }, {
-        ptype: "gxp_zoom",
-        actionTarget: "map.tbar"
-    }, {
-        ptype: "gxp_navigationhistory",
-        actionTarget: "map.tbar"
-    }],
-    
+
+        // TOOLS IN NORTH BAR
+
+
+        {
+            // about-button
+            actions: ["aboutbutton"],   // defined in viewer.js initPortal
+            actionTarget: "toppanel.tbar"
+        },
+
+        // Skip to right edge (rquired for login button)
+        {
+            actions: ["->"],
+            actionTarget: "toppanel.tbar"
+        },
+
+        // Login Button
+        {
+            actions: ["loginbutton"],
+            actionTarget: "toppanel.tbar"
+        },
+
+        // MAP TBAR TOOLS
+        {
+            ptype: "gxp_addlayers",
+            actionTarget: "tree.tbar"
+        },
+        {
+            ptype: "gxp_removelayer",
+            actionTarget: ["tree.tbar", "tree.contextMenu"]
+        },
+        {
+            ptype: "gxp_zoomtoextent",
+            actionTarget: "map.tbar"
+        },
+        {
+            ptype: "gxp_zoom",
+            actionTarget: "map.tbar"
+        },
+        {
+            ptype: "gxp_navigationhistory",
+            actionTarget: "map.tbar"
+        }
+    ],
+
     // layer sources
     sources: {
         local: {
@@ -75,7 +130,7 @@ var app = new gxp.Viewer({
             ptype: "gxp_osmsource"
         }
     },
-    
+
     // map and layers
     map: {
         id: "mymap", // id needed to reference map in portalConfig above
