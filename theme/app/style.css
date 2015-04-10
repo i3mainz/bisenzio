@@ -16,6 +16,16 @@ body {
     background-image: url(/theme/app/img/geoexplorer.png);
 }
 
+/* Login Button */
+.x-btn .login {
+    background-image: url(/theme/app/img/silk/door_in.png);
+}
+
+/* Logout Button */
+.x-btn .logout {
+    background-image: url(/theme/app/img/silk/door_out.png);
+}
+
 .olControlAttribution {
     text-align: right;
     font-size: 9px;
