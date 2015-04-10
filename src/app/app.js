@@ -70,7 +70,9 @@ var app = new gxp.Viewer({
             ptype: "gxp_layertree",
             outputConfig: {
                 id: "tree",
+                title: "Layers",
                 border: true,
+                autoscroll: true,
                 tbar: [] // we will add buttons to "tree.bbar" later
             },
             outputTarget: "westpanel"
@@ -97,15 +99,23 @@ var app = new gxp.Viewer({
             actionTarget: "toppanel.tbar"
         },
 
+
         // MAP TBAR TOOLS
+        // ---------------
+
+        // add layers
+
         {
             ptype: "gxp_addlayers",
             actionTarget: "tree.tbar"
         },
+
+        // remove layers
         {
             ptype: "gxp_removelayer",
             actionTarget: ["tree.tbar", "tree.contextMenu"]
         },
+
         {
             ptype: "gxp_zoomtoextent",
             actionTarget: "map.tbar"
@@ -159,6 +169,8 @@ var app = new gxp.Viewer({
                 vertical: true,
                 height: 100
             },
+
+            // scale overlay
             {
                 xtype: "gxp_scaleoverlay"
             }
