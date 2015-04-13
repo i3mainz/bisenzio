@@ -3,17 +3,24 @@
  *
  * @require widgets/Viewer.js
  * @require widgets/ScaleOverlay.js
+ * @require plugins/AddLayers.js
+ * @require plugins/FeatureManager.js
+ * @require plugins/FeatureEditor.js
  * @require plugins/LayerTree.js
+ * @require plugins/Measure.js
+ * @require plugins/Navigation.js
+ * @require plugins/NavigationHistory.js
  * @require plugins/OLSource.js
  * @require plugins/OSMSource.js
- * @require plugins/WMSCSource.js
- * @require plugins/ZoomToExtent.js
- * @require plugins/NavigationHistory.js
- * @require plugins/Zoom.js
- * @require plugins/AddLayers.js
  * @require plugins/RemoveLayer.js
+ * @require plugins/WMSCSource.js
+ * @require plugins/WMSGetFeatureInfo.js
+ * @require plugins/Zoom.js
+ * @require plugins/ZoomToExtent.js
+ * @require plugins/ZoomToLayerExtent.js
  * @require RowExpander.js
  */
+
 console.log("... start up boundless sdk app!");
 
 var app = new gxp.Viewer({
@@ -100,11 +107,10 @@ var app = new gxp.Viewer({
         },
 
 
-        // MAP TBAR TOOLS
-        // ---------------
+        // LAYERTREE TBAR TOOLS
+        // --------------------
 
         // add layers
-
         {
             ptype: "gxp_addlayers",
             actionTarget: "tree.tbar"
@@ -116,17 +122,83 @@ var app = new gxp.Viewer({
             actionTarget: ["tree.tbar", "tree.contextMenu"]
         },
 
+
+        // MAP TBAR TOOLS
+        // ---------------
+
+        // Navigation tool (move tool)
+        {
+            ptype: "gxp_navigation"
+        },
+
+        // zoom to max extent
         {
             ptype: "gxp_zoomtoextent",
             actionTarget: "map.tbar"
         },
+
+        // zoom in or out
         {
             ptype: "gxp_zoom",
+            showZoomBoxAction: true, // adds "Zoom by dragging"
             actionTarget: "map.tbar"
         },
+
+        // zoom to previous or next extend
         {
             ptype: "gxp_navigationhistory",
             actionTarget: "map.tbar"
+        },
+
+        // object info
+        {
+            ptype: "gxp_wmsgetfeatureinfo",
+
+            // changes tools position
+            actionTarget: {
+                target: "map.tbar", // not needed
+                index: 7
+            }
+        },
+
+        // Messen
+        {
+            ptype: "gxp_measure",
+            //toggleGroup: "interaction",
+            controlOptions: {
+                immediate: true
+            },
+            showButtonText: false,
+            actionTarget: "map.tbar"
+        },
+
+        // Featuremanager (invisible)
+        {
+            ptype: "gxp_featuremanager",
+            id: "featuremanager",
+            paging: false,
+            autoSetLayer: true
+        },
+
+        // Edit (requires Feature Manager)
+        {
+            ptype: "gxp_featureeditor",
+            featureManager: "featuremanager",
+            autoLoadFeature: true,
+            splitButton: true,
+            showButtonText: false,
+            //toggleGroup: "interaction",
+            actionTarget: "map.tbar"
+        },
+
+
+        // LAYERTREE CONTEXT TOOLS
+        // ------------------------
+
+        // Zoom to layer extent
+        {
+            ptype: "gxp_zoomtolayerextent",
+            actionTarget: ["tree.contextMenu"]
         }
     ],
 
