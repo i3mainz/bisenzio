@@ -6,6 +6,7 @@
  * @require plugins/AddLayers.js
  * @require plugins/FeatureManager.js
  * @require plugins/FeatureEditor.js
+ * @require plugins/LayerManager.js
  * @require plugins/LayerTree.js
  * @require plugins/Measure.js
  * @require plugins/Navigation.js
@@ -74,7 +75,9 @@ var app = new gxp.Viewer({
 
         // layer tree within left panel
         {
-            ptype: "gxp_layertree",
+            //ptype: "opacitylayermanager",
+            ptype: "gxp_layermanager",
+            //ptype: "gxp_layertree",
             outputConfig: {
                 id: "tree",
                 title: "Layers",
