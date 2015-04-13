@@ -57,10 +57,14 @@ var app = new gxp.Viewer({
             // left sidebar
             {
                 id: "westpanel",
-                xtype: "container",
+                //xtype: "container",
+                xtype: "panel",
                 layout: "fit",
                 region: "west",
-                width: 200
+                width: 200,
+                split: true, // dragable border
+                collapseMode: "mini" // clickable border
+                //hideCollapseTool: true
             }
         ],
         bbar: {id: "mybbar"}
