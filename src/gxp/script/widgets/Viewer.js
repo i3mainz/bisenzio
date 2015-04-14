@@ -803,7 +803,7 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
     initAboutButton: function() {
 
         // text snippets used in about section
-        var appInfoText = "WebGIS";
+        var appInfoText = "Bisenzio WebGIS";
         var mapInfoText = "Map info";
         var aboutThisMapText = "About this map";
         var titleText = "Title";
@@ -811,8 +811,11 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
         var contactText ="Contact";
         var aboutText = "About GeoExplorer";
         var aboutTitle = appInfoText;
-        var aboutAbstract = "";
-        var aboutContact = "";
+        var aboutAbstract = "This exemplary WebGIS application presents layers of the Monte Bisenzio area. " +
+            "In addition, authorized users are able to edit layers to capture relevant archaeological information. " +
+            "An introductory tutorial can be downloaded <a href='/static/tutorial.pdf'>here</a>.";
+        var aboutContact = "For additional information please contact the " +
+            "<a href='mailto:axel.kunz@hs-mainz.de'</a>i3mainz</a><a> (Axel Kunz)</a>.";
 
         new Ext.Button({
             id: "aboutbutton",  // linked to in app.js in the tools section
