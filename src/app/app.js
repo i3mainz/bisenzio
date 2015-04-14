@@ -4,6 +4,7 @@
  * @require widgets/Viewer.js
  * @require widgets/ScaleOverlay.js
  * @require plugins/AddLayers.js
+ * @require plugins/BingSource.js
  * @require plugins/FeatureManager.js
  * @require plugins/FeatureEditor.js
  * @require plugins/LayerManager.js
@@ -89,7 +90,47 @@ var app = new gxp.Viewer({
                 autoscroll: true,
                 //tbar: [] // we will add buttons to "tree.bbar" later
             },
-            outputTarget: "westpanel"
+            outputTarget: "westpanel",
+
+            // layer groups
+            groups: {
+                "capture": {
+                    title: "Capture",
+                    expanded: false
+                },
+                "arch": {
+                    title: "Archaeology",
+                    expanded: false
+                },
+                "topo": {
+                    title: "Topographic maps",
+                    expanded: false
+                },
+                "general": {
+                    title: "General",
+                    expanded: false
+                },
+                "dtm": {
+                    title: "DEM",
+                    expanded: false
+                },
+
+                "luft": {
+                    title: "Aerial photos",
+                    expanded: false
+                },
+                "orto": {
+                    title: "Ortophotos",
+                    expanded: false
+                },
+
+                //"default": "Zusätzliche Layer"
+                "background": {
+                    title: "Base Layers",
+                    exclusive: true, // radio button instead of checkbox
+                    expanded: false
+                }
+            }
         },
 
         // TOOLS IN NORTH BAR
@@ -195,32 +236,310 @@ var app = new gxp.Viewer({
 
     // layer sources
     sources: {
+        // local geoserver
         local: {
             ptype: "gxp_wmscsource",
-            url: "/geoserver/wms",
-            version: "1.1.1"
+            //url: "/geoserver/wms",
+            url: "/geoserver/bisenzio/wms",
+            version: "1.1.1",
+            title: "Local GeoServer"
         },
+
+        // OpenStreetMap
         osm: {
             ptype: "gxp_osmsource"
+        },
+
+        // Bing
+        bing: {
+            ptype: "gxp_bingsource"
+        },
+
+        // OpenLayers
+        ol: {
+            ptype: "gxp_olsource"
         }
+
+        // MapQuest
+        // mapquest: {
+        //     ptype: "gxp_mapquestsource"
+        // },
+
+        // Google
+        // google: {
+        //     ptype: "gxp_googlesource"
+        // }
     },
 
-    // map and layers
+    // map properties
     map: {
         id: "mymap", // id needed to reference map in portalConfig above
         title: "Map",
         projection: "EPSG:900913",
-        center: [-10764594.758211, 4523072.3184791],
-        zoom: 3,
-        layers: [{
-            source: "osm",
-            name: "mapnik",
-            group: "background"
-        }, {
-            source: "local",
-            name: "usa:states",
-            selected: true
-        }],
+        //center: [-10764594.758211, 4523072.3184791],
+        center: [1321889, 5247337],
+        maxExtent: [-1221438, 4331851, 4130376, 7726878],
+        //zoom: 3,
+        zoom: 11,
+
+        layers: [
+            {
+                //CAPTURE (Erfassung)
+                group: "capture",
+                source: "local",
+                name: "points_g",   // wms name
+                title: "Punkte",    // display name
+                visibility: false
+                //showButtonText: true,
+                //buttonText: "This is a test!"
+            },{
+                group: "capture",
+                source: "local",
+                name: "lines_g",
+                title: "Liniengeometrien",
+                visibility: false
+            },{
+                group: "capture",
+                source: "local",
+                title: "Flächengeometrien",
+                name: "areas_g",   // wms name
+                visibility: false
+            },{
+                // ARCH (Archäologische Fachdaten)
+                group: "arch",
+                source: "local",
+                title: "raddatz_1975_beil_1",
+                name: "raddatz_1975_beil_1",
+                visibility: false,
+                authReq: false
+            },{
+                group: "arch",
+                source: "local",
+                title: "raddatz_1975_beil_2",
+                name: "raddatz_1975_beil_2",   // wms name
+                visibility: false,
+                authReq: false
+            },{
+                group: "arch",
+                source: "local",
+                title: "Driehaus 1987 - Siedlungen",
+                name: "driehaus_1987-siedlungen",   // wms name
+                visibility: false,
+                authReq: false
+            },{
+                group: "arch",
+                source: "local",
+                title: "Rossi 2012 Abb.3",
+                name: "rossi_2012_abb3",
+                visibility: false,
+                authReq: false
+            },{
+                group: "arch",
+                source: "local",
+                title: "Ortsnamen (JGU)",
+                name: "bisenzio_place_names",
+                visibility: false,
+                authReq: false
+            },{
+                group: "arch",
+                source: "local",
+                title: "Funde (JGU)",
+                name: "bisenzio_finds",
+                visibility: false,
+                authReq: false
+            },{
+                // TOPO (Topographische Karten)
+                source: "local",
+                title: "CTR 5K 2002/2003",
+                name: "ctr_5k",
+                group: "topo",
+                visibility: false,
+                authReq: false
+            },{
+                source: "local",
+                title: "CTR 2002",
+                name: "ctr_2002_merged",
+                group: "topo",
+                visibility: false,
+                authReq: false
+            },{
+                source: "local",
+                title: "Catasto Storico 1940",
+                name: "catasto_storico_1940",
+                group: "topo",
+                visibility: false,
+                authReq: false
+            },{
+                source: "local",
+                title: "Catasto Rustico (105_08)",
+                name: "ua_lazio_105_08",
+                group: "topo",
+                visibility: false,
+                authReq: false
+            },{
+                source: "local",
+                title: "Catasto Rustico (105_05)",
+                name: "ua_lazio_105_05",
+                group: "topo",
+                visibility: false,
+                authReq: false
+            },{
+                group: "topo",
+                source: "local",
+                name: "ua_lazio_103_10",
+                title: "Catasto Rustico (103_10)",
+                visibility: false,
+                authReq: false
+            },{
+
+                // GENERAL (Allgemeines)
+                source: "local",
+                title: "Kommunen",
+                name: "kommunen",
+                group: "general",
+                visibility: false,
+                authReq: false
+            },{
+                source: "local",
+                title: "Bathymetrie",
+                name: "carta_batimetrica",
+                group: "general",
+                visibility: false,
+                authReq: false
+            },{
+                // DTM
+                source: "local",
+                title: "DTM5 Shade",
+                name: "dtm5-shade",
+                group: "dtm",
+                visibility: false,
+                authReq: true
+            },{
+                source: "local",
+                title: "DTM5 Relief",
+                name: "dtm5-relief",
+                group: "dtm",
+                visibility: false,
+                authReq: true
+            },{
+                group: "dtm",
+                source: "local",
+                name: "dtm5-aspect",
+                title: "DTM5 Aspect",
+                visibility: false,
+                authReq: true
+            },{
+                group: "dtm",
+                source: "local",
+                name: "dtm5-slope",
+                title: "DTM5 Slope",
+                visibility: false,
+                authReq: false
+            },{
+                group: "dtm",
+                source: "local",
+                name: "dtm5",
+                title: "DTM5",
+                visibility: false,
+                authReq: false
+            },{
+                source: "local",
+                title: "DTM5 Contours",
+                name: "dtm5-contours",
+                group: "dtm",
+                visibility: false,
+                authReq: false
+            },{
+                // LUFT (Luftbilder)
+                source: "local",
+                title: "Royal AF 1944 - 1",
+                name: "raf_1944_1",
+                group: "luft",
+                visibility: false,
+                authReq: false
+            },{
+                source: "local",
+                title: "Royal AF 1944 - 2",
+                name: "raf_1944_2",
+                group: "luft",
+                visibility: false,
+                authReq: false
+            },{
+                source: "local",
+                title: "Royal AF 1944 - 3",
+                name: "raf_1944_3",
+                group: "luft",
+                visibility: false,
+                authReq: false
+            },{
+                group: "luft",
+                source: "local",
+                name: "armee_1939",
+                title: "Armee 1939",
+                visibility: false,
+                authReq: false
+            },{
+                // ORTO (Ortophotos)
+                group: "orto",
+                source: "local",
+                title: "1988/89",
+                name: "ortophoto_1988_89",
+                visibility: false,
+                authReq: false
+            },{
+                group: "orto",
+                source: "local",
+                title: "1994/98",
+                name: "ortophoto_1994_98",
+                visibility: false,
+                authReq: false
+            },{
+                group: "orto",
+                source: "local",
+                title: "2000",
+                name: "ortophoto_2000",
+                visibility: false,
+                authReq: false
+            },{
+                group: "orto",
+                source: "local",
+                title: "2006",
+                name: "ortophoto_2006",
+                visibility: false,
+                authReq: false
+            },{
+                group: "orto",
+                source: "local",
+                title: "2008",
+                name: "ortophoto_2008",
+                visibility: false,
+                authReq: false
+            },
+
+
+            // BACKGROUND
+
+            // bing
+            {
+                group: "background",
+                source: "bing",
+                name: "Aerial", // "Aerial", "Road", "ArealWithLabels"
+                title: "Bing Aerial",
+                visibility: true
+                //authReq: false
+            },
+
+            // empty background
+            {
+                group: "background",
+                source: "ol",
+                //fixed: true,  // prevents dragging
+                type: "OpenLayers.Layer",
+                args: ["None", {
+                    visibility: false
+                }]
+            }
+        ],
 
         // TOOLS MAP OVERLAY
         // ------------------
