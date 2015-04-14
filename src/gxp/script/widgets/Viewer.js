@@ -199,7 +199,230 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
      *  configuration e.g. by a plugin that provides authentication. It can
      *  also be accessed to check if an authentication mechanism is available.
      */
-    //authenticate: null,
+    authenticate: function() {
+
+        console.log("starting auth");
+
+        // text snippets
+        var loginErrorText = "Invalid username or password.";
+
+        var mythis = this;
+
+        // form panel to enter username / password
+        // this form will sibmit AJAX request to the specified URL when submitted
+        // this form will be displayed in the window defined later
+        var loginPanel = new Ext.FormPanel({
+            //title: "Simple Form",
+            //height: 150,
+            //width: 350,
+            //bodyPadding: 5,
+            frame: true,
+            labelWidth: 60,
+
+            // The fields
+            defaultType: "textfield",   // e.g. xtype: 'datefield' not needed
+            items: [
+                // input: username
+                {
+                    fieldLabel: "User",
+                    name: "username",
+                    width: 137,
+                    allowBlank: false,
+                    listeners: {
+                        render: function() {
+                            this.focus(true, 100);
+                        }
+                    }
+                },
+                // input: password
+                {
+                    fieldLabel: "Password",
+                    name: "password",
+                    width: 137,
+                    inputType: "password",
+                    allowBlank: false
+                }
+            ],
+
+            // error reader defines if request was successfull or failed
+            // todo: check redirect location ends with &error=true
+            // e.g. if (/error=true/.test(getHeader("Location"))) {
+            errorReader: {
+                read: function(response) {
+                    var success = false;
+                    var records = [];
+
+                    // check if string "Invalid username/password combination"
+                    // appears in response body
+                    // todo: replace by checking redirect-url to end with error=true
+                    //console.log("response-text: ", response["responseText"]);
+                    var gerText = "Ungültige Kombination von " +
+                                  "Benutzername und Kennwort.";
+                    var engText = "Invalid username/password combination.";
+
+                    if (response["responseText"].indexOf(gerText) > -1 ||
+                        response["responseText"].indexOf(engText) > -1 ) {
+                        // login failed
+                        //success = false;
+                        var loginErrorText = "Invalid username or password.";
+                        records = [
+                            {data: {id: "username", msg: loginErrorText}},
+                            {data: {id: "password", msg: loginErrorText}}
+                        ];
+
+                    } else {
+                        // login correct
+                        success = true;
+                    }
+
+                    return {
+                        success: success,
+                        // empty on success, returns username/password on failed
+                        records: records
+                    };
+                }
+            },
+
+            // Login Button
+            buttons: [{
+                text: "Login",
+                formBind: true, //only enabled once the form is valid
+                handler: function() {
+                    sendAjaxRequest();
+                },
+                scope: this
+            }],
+
+            // keyboard shortcut (start function when ENTER is pressed)
+            keys: [{
+                key: [Ext.EventObject.ENTER],
+                handler: function() {
+                    sendAjaxRequest();
+                },
+                scope: this
+            }]
+        });
+
+        function sendAjaxRequest() {
+            // temporarily disable buttons to prevent further
+            // requests being sent
+            loginPanel.buttons[0].disable();
+
+            // get form via var panel
+            var form = loginPanel.getForm();
+
+            //var mythis = this;
+            if (form.isValid()) {
+                var formData = form.getFieldValues();
+
+                // The form will submit an AJAX request to this URL when submitted
+                // it works!!!
+                form.submit({
+                    method: "POST",
+                    url: "/geoserver/j_spring_security_check",
+                    //headers: {"Content-Type": "application/x-www-form-urlencoded"},
+
+                    // login successfull (defined by errorreader in loginPanel)
+                    success: function(form, action) {
+                        //Ext.Msg.alert('Success', action.result.msg);
+                        console.log("login successfull!");
+
+                        // set "user" cookie to entered login username
+                        // to remember that user has working JSESSION ID and remains
+                        // authorized and shown next to login/logout button
+                        console.log("my custom cookie: " + $.cookie("geoexplorer-user"));
+                        mythis.setCookieValue("geoexplorer-user", formData.username);
+                        console.log("my custom cookie after login: " + $.cookie("geoexplorer-user"));
+
+                        // set role to "authorized"
+                        mythis.setAuthorizedRoles(["ROLE_ADMINISTRATOR"]);
+                        console.log("isAuthorized: " + mythis.isAuthorized());
+                        console.log("isAuthanticated: " + mythis.isAuthenticated());
+
+                        // replace "login"-button with "logout"-button and entered username
+                        mythis.showLogoutButton(formData.username);
+
+                        // close login window
+                        win.close();
+                    },
+
+                    // login failed (defined by errorreader)
+                    failure: function(form, action) {
+                        //Ext.Msg.alert('Failure', action.result.msg);
+                        console.log("login failed!");
+
+                        mythis.clearCookieValue("JSESSIONID");
+                        console.log("my custom cookie: " + $.cookie("geoexplorer-user"));
+                        mythis.clearCookieValue("geoexplorer-user");
+                        console.log("my custom cookie after failed login: " + $.cookie("geoexplorer-user"));
+                        mythis.setAuthorizedRoles([]);
+
+                        console.log("isAuthorized: " + mythis.isAuthorized());
+                        console.log("isAuthanticated: " + mythis.isAuthenticated());
+
+                        loginPanel.buttons[0].enable(); // reactive buttons
+                    }
+                });
+            }
+        }
+
+
+        // window that holds username/password panel
+        // variable panel has to be defined before referencing it here
+        var win = new Ext.Window({
+            title: "Login",
+            layout: "fit",
+            width: 235,
+            height: 130,
+            plain: true,
+            border: false,
+            modal: true,
+            items: [loginPanel], // holds var panel defined later
+            listeners: {
+                beforedestroy: mythis.cancelAuthentication,
+                scope: this
+            }
+        });
+
+        //setCookieToExpired()
+        //this.clearCookieValue("JSESSIONID");
+        win.show();
+    },
+
+
+    /** private: method[setCookieValue]
+     *  Set the value for a cookie parameter
+     */
+     // only used to set user variable not JSESSION cookie
+    setCookieValue: function(param, value) {
+        document.cookie = param + '=' + escape(value);
+    },
+
+    /** private: method[clearCookieValue]
+     *  Clear a certain cookie parameter.
+     */
+     // only used to set user variable not JSESSION cookie
+    clearCookieValue: function(param) {
+        document.cookie = param + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+    },
+
+    /** private: method[getCookieValue]
+     *  Get the value of a certain cookie parameter. Returns null if not found.
+     */
+     // only used to set user variable not JSESSION cookie
+    getCookieValue: function(param) {
+        var i, x, y, cookies = document.cookie.split(";");
+        for (i=0; i < cookies.length; i++) {
+            x = cookies[i].substr(0, cookies[i].indexOf("="));
+            y = cookies[i].substr(cookies[i].indexOf("=")+1);
+            x=x.replace(/^\s+|\s+$/g,"");
+            if (x==param) {
+                return unescape(y);
+            }
+        }
+        return null;
+    },
+
 
     /** api: property[authorizedRoles]
      *  ``Array`` Roles the application is authorized for. This property is
@@ -587,10 +810,9 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
         var descriptionText = "Description";
         var contactText ="Contact";
         var aboutText = "About GeoExplorer";
-        var about = {
-            title: appInfoText,
-            abstract: ""
-        };
+        var aboutTitle = appInfoText;
+        var aboutAbstract = "";
+        var aboutContact = "";
 
         new Ext.Button({
             id: "aboutbutton",  // linked to in app.js in the tools section
@@ -607,9 +829,9 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
             var mapInfo = new Ext.Panel({
                 title: mapInfoText,
                 html: '<div class="gx-info-panel">' +
-                      '<h2>'+titleText+'</h2><p>' + about.title +
-                      '</p><h2>'+descriptionText+'</h2><p>' + about.abstract +
-                      '</p> <h2>'+contactText+'</h2><p>' + about.contact +'</p></div>',
+                      '<h2>'+titleText+'</h2><p>' + aboutTitle +
+                      '</p><h2>'+descriptionText+'</h2><p>' + aboutAbstract +
+                      '</p> <h2>'+contactText+'</h2><p>' + aboutContact +'</p></div>',
                 height: 'auto',
                 width: 'auto'
             });
@@ -644,263 +866,9 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
     // function called within initPortal
     initLoginButton: function() {
 
-        // text snippets
-        var loginText = "Login";
-        var logoutText = "Logout, {user}";
 
-        function logout() {
-
-            // text snippets
-            var logoutConfirmTitle = "Warning";
-            var logoutConfirmMessage = "Logging out will undo any unsaved changes. Are you sure you want to logout?";
-
-            function logoutUsingWrongUsernameAndPassword() {
-                // sends request to login page using
-                // wrong username and password to reset JSESSION cookie
-                console.log("trying to kill auth!");
-                $.ajax({
-                    url: "/geoserver/j_spring_security_check",
-                    type: "GET",
-                    username: "1",
-                    password: "1",
-                    contentType: "application/x-www-form-urlencoded",
-                    success: function(){
-                        console.log("killed logiN!");
-                    }
-                });
-            }
-
-            var callback = function() {
-                //this.clearCookieValue("JSESSIONID");    // not defined - fix!
-                logoutUsingWrongUsernameAndPassword();  // reset JSESSIONID
-                this.clearCookieValue("geoexplorer-user");    // not needed ???
-                this.setAuthorizedRoles([]);    // works
-                console.log("refreshing window ...");
-                window.location.reload();
-            };
-
-            // confirm logout message window
-            Ext.Msg.show({
-                title: this.logoutConfirmTitle,
-                msg: this.logoutConfirmMessage,
-                buttons: Ext.Msg.YESNO, // YESNOCANCEL
-                icon: Ext.MessageBox.WARNING,
-                fn: function(btn) {
-                    if (btn === 'yes') {
-                        callback.call(this);
-                    }
-                },
-                scope: this
-            });
-        };
-
-        function authenticate() {
-            console.log("starting auth");
-
-            // text snippets
-            var loginErrorText = "Invalid username or password.";
-
-            var mythis = this;
-
-            // form panel to enter username / password
-            // this form will sibmit AJAX request to the specified URL when submitted
-            // this form will be displayed in the window defined later
-            var loginPanel = new Ext.FormPanel({
-                //title: "Simple Form",
-                //height: 150,
-                //width: 350,
-                //bodyPadding: 5,
-                frame: true,
-                labelWidth: 60,
-
-                // The fields
-                defaultType: "textfield",   // e.g. xtype: 'datefield' not needed
-                items: [
-                    // input: username
-                    {
-                        fieldLabel: "User",
-                        name: "username",
-                        width: 137,
-                        allowBlank: false,
-                        listeners: {
-                            render: function() {
-                                this.focus(true, 100);
-                            }
-                        }
-                    },
-                    // input: password
-                    {
-                        fieldLabel: "Password",
-                        name: "password",
-                        width: 137,
-                        inputType: "password",
-                        allowBlank: false
-                    }
-                ],
-
-                // error reader defines if request was successfull or failed
-                // todo: check redirect location ends with &error=true
-                // e.g. if (/error=true/.test(getHeader("Location"))) {
-                errorReader: {
-                    read: function(response) {
-                        var success = false;
-                        var records = [];
-
-                        // check if string "Invalid username/password combination" appears in response body
-                        // todo: replace by checking redirect-url to end with error=true
-                        //console.log("response-text: ", response["responseText"]);
-                        var gerText = "Ungültige Kombination von Benutzername und Kennwort.";
-                        var engText = "Invalid username/password combination.";
-
-                        if (response["responseText"].indexOf(gerText) > -1 || response["responseText"].indexOf(engText) > -1 ) {
-                            // login failed
-                            //success = false;
-                            records = [
-                                {data: {id: "username", msg: loginErrorText}},
-                                {data: {id: "password", msg: loginErrorText}}
-                            ];
-
-                        } else {
-                            // login correct
-                            success = true;
-                        }
-
-                        return {
-                            success: success,
-                            // empty on success, returns username/password on failed
-                            records: records
-                        };
-                    }
-                },
-
-                // Login Button
-                buttons: [{
-                    text: "Login",
-                    formBind: true, //only enabled once the form is valid
-                    handler: function() {
-                        sendAjaxRequest();
-                    },
-                    scope: this
-                }],
-
-                // keyboard shortcut (start function when ENTER is pressed)
-                keys: [{
-                    key: [Ext.EventObject.ENTER],
-                    handler: function() {
-                        sendAjaxRequest();
-                    },
-                    scope: this
-                }]
-            });
-
-            function sendAjaxRequest() {
-                // temporarily disable buttons to prevent further
-                // requests being sent
-                loginPanel.buttons[0].disable();
-
-                // get form via var panel
-                var form = loginPanel.getForm();
-
-                //var mythis = this;
-                if (form.isValid()) {
-                    var formData = form.getFieldValues();
-
-                    // The form will submit an AJAX request to this URL when submitted
-                    // it works!!!
-                    form.submit({
-                        method: "POST",
-                        url: "/geoserver/j_spring_security_check",
-                        //headers: {"Content-Type": "application/x-www-form-urlencoded"},
-
-                        // login successfull (defined by errorreader in loginPanel)
-                        success: function(form, action) {
-                            //Ext.Msg.alert('Success', action.result.msg);
-                            //console.log("login successfull!");
-
-                            // set "user" cookie to entered login username
-                            // to remember that user has working JSESSION ID and remains
-                            // authorized and shown next to login/logout button
-                            console.log("my custom cookie: " + $.cookie("geoexplorer-user"));
-                            mythis.setCookieValue("geoexplorer-user", formData.username);
-                            console.log("my custom cookie after login: " + $.cookie("geoexplorer-user"));
-
-                            // set role to "authorized"
-                            mythis.setAuthorizedRoles(["ROLE_ADMINISTRATOR"]);
-                            console.log("isAuthorized: " + mythis.isAuthorized());
-                            console.log("isAuthanticated: " + mythis.isAuthenticated());
-
-                            // replace "login"-button with "logout"-button and entered username
-                            mythis.showLogout(formData.username);
-
-                            // close login window
-                            win.close();
-                        },
-
-                        // login failed (defined by errorreader)
-                        failure: function(form, action) {
-                            //Ext.Msg.alert('Failure', action.result.msg);
-                            //console.log("login failed!");
-
-                            mythis.clearCookieValue("JSESSIONID");
-                            console.log("my custom cookie: " + $.cookie("geoexplorer-user"));
-                            mythis.clearCookieValue("geoexplorer-user");
-                            console.log("my custom cookie after failed login: " + $.cookie("geoexplorer-user"));
-                            mythis.setAuthorizedRoles([]);
-
-                            console.log("isAuthorized: " + mythis.isAuthorized());
-                            console.log("isAuthanticated: " + mythis.isAuthenticated());
-
-                            loginPanel.buttons[0].enable(); // reactive buttons
-                        }
-                    });
-                }
-            }
-
-
-            // window that holds username/password panel
-            // variable panel has to be defined before referencing it here
-            var win = new Ext.Window({
-                title: "Login",
-                layout: "fit",
-                width: 235,
-                height: 130,
-                plain: true,
-                border: false,
-                modal: true,
-                items: [loginPanel], // holds var panel defined later
-                listeners: {
-                    beforedestroy: mythis.cancelAuthentication,
-                    scope: this
-                }
-            });
-
-            //setCookieToExpired()
-            //this.clearCookieValue("JSESSIONID");
-            console.log("showing window");
-            win.show();
-        };
-
-        function applyLoginState(iconCls, text, handler, scope) {
-            console.log("within applystate");
-            var loginButton = Ext.getCmp("loginbutton");
-            loginButton.setIconClass(iconCls);
-            loginButton.setText(text);
-            loginButton.setHandler(handler, scope);
-            console.log("done applystate");
-        };
-
-        function showLogin() {
-            var text = loginText;
-            var handler = authenticate;    // call auth function
-            applyLoginState('login', text, handler, this);
-        };
 
         // run this when user is logged in
-        function showLogout(user) {
-            var text = new Ext.Template(logoutText).applyTemplate({user: user});
-            var handler = logout();
-            applyLoginState('logout', text, handler, this);
-        };
 
 
         function userCookieExists(userCookie) {
@@ -920,7 +888,7 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
                 //console.log("not authorized!");
             }
             return loggedIn;
-        };
+        }
 
         function userIsLoggedIntoGeoserver(userCookie) {
             // sends request to login page and
@@ -947,23 +915,116 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
                 }
             }); // end ajax
             return isLoggedIn;
-        };
+        }
 
+        // create login/logout button
         new Ext.Button({
             id: "loginbutton"}
         );
 
-        var userCookie = $.cookie("geoexplorer-user");  // get cookie using jQuery
+        // get webgis cookie using jQuery
+        var userCookie = $.cookie("geoexplorer-user");
+
         if (userCookieExists(userCookie) === true && userIsLoggedIntoGeoserver(userCookie) === true) {
-            // user is logged in
-            showLogout(userCookie);
+            // user is logged into geoserver and has a webgis cookie
+            this.showLogoutButton(userCookie);
         } else {
-            // no user cookie set or other user was previously logged into GeoServer
-            //this.clearCookieValue("geoexplorer-user");    // not needed ???
-            $.removeCookie("geoexplorer", { path: "/" });
+            // user is not logged into geoserver or has no webgis cookie
+            //$.removeCookie("geoexplorer", { path: "/" });
             //this.setAuthorizedRoles([]);    // works
-            showLogin();
+            this.showLoginButton();
         }
+    },
+
+    doOnButtonClick: function() {
+
+    },
+
+    // show this when no user is logged in
+    showLoginButton: function() {
+        var iconCls = 'login';
+        var text = "Login";
+        var handler = this.authenticate;  // call auth function
+        var scope = this;
+
+        var loginButton = Ext.getCmp("loginbutton");
+        loginButton.setIconClass(iconCls);
+        loginButton.setText(text);
+        loginButton.setHandler(handler, scope);
+    },
+
+    // show logout button
+    // if clicked, logout the current user by trying to login with incorrect username/pw
+    showLogoutButton: function(user) {
+
+        var doLogout = function() {
+
+            var mythis = this;
+
+            // logout by trying to login with wrrong username/pw
+            function logoutUsingWrongUsernameAndPassword() {
+                // sends request to login page using
+                // wrong username and password to reset JSESSION cookie
+                console.log("trying to kill auth!");
+                $.ajax({
+                    url: "/geoserver/j_spring_security_check",
+                    type: "POST",
+                    username: "1",
+                    password: "1",
+                    contentType: "application/x-www-form-urlencoded",
+                    success: function(){
+                        console.log("killed logiN!");
+                    }
+                });
+            }
+
+            // logout function (called when pressing "logout")
+            var callback = function() {
+
+                //this.clearCookieValue("JSESSIONID");    // not defined - fix!
+
+                // reset JSESSIONID
+                logoutUsingWrongUsernameAndPassword();
+                // clear user cookie
+                //mythis.clearCookieValue("geoexplorer-user");    // not needed ???
+                $.cookie('geoexplorer-user', null);
+
+                // set role to unauthorized
+                mythis.setAuthorizedRoles([]);    // works
+
+                // refresh window
+                console.log("refreshing window ...");
+                window.location.reload();
+            }
+
+            // confirm logout message window
+            Ext.Msg.show({
+                title: "Warning",
+                msg: "Logging out will undo any unsaved changes. Are you sure you want to logout?",
+                buttons: Ext.Msg.YESNO, // YESNOCANCEL
+                icon: Ext.MessageBox.WARNING,
+                fn: function(btn) {
+                    if (btn === 'yes') {
+                        // on button click, run callback function
+                        callback.call(this);
+                        //callback()
+                    }
+                },
+                scope: this
+            });
+        };
+
+        var iconCls = 'logout';
+        var logoutText = "Logout, {user}";
+        var text = new Ext.Template(logoutText).applyTemplate({user: user});
+        var handler = doLogout;
+        var scope = this;
+
+        var loginButton = Ext.getCmp("loginbutton");
+        loginButton.setIconClass(iconCls);
+        loginButton.setText(text);
+        loginButton.setHandler(handler, scope);
+
     },
 
     activate: function() {
