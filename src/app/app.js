@@ -87,7 +87,7 @@ var app = new gxp.Viewer({
                 title: "Layers",
                 border: true,
                 autoscroll: true,
-                tbar: [] // we will add buttons to "tree.bbar" later
+                //tbar: [] // we will add buttons to "tree.bbar" later
             },
             outputTarget: "westpanel"
         },
@@ -111,22 +111,6 @@ var app = new gxp.Viewer({
         {
             actions: ["loginbutton"],
             actionTarget: "toppanel.tbar"
-        },
-
-
-        // LAYERTREE TBAR TOOLS
-        // --------------------
-
-        // add layers
-        {
-            ptype: "gxp_addlayers",
-            actionTarget: "tree.tbar"
-        },
-
-        // remove layers
-        {
-            ptype: "gxp_removelayer",
-            actionTarget: ["tree.tbar", "tree.contextMenu"]
         },
 
 
