@@ -936,9 +936,6 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
         }
     },
 
-    doOnButtonClick: function() {
-
-    },
 
     // show this when no user is logged in
     showLoginButton: function() {
