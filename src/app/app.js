@@ -24,6 +24,7 @@
  */
 
 console.log("... start up boundless sdk app!");
+//console.log("usercookie: " + $.cookie("geoexplorer-user"));
 
 var app = new gxp.Viewer({
     portalConfig: {
@@ -87,7 +88,7 @@ var app = new gxp.Viewer({
                 id: "tree",
                 title: "Layers",
                 border: true,
-                autoscroll: true,
+                autoscroll: true
                 //tbar: [] // we will add buttons to "tree.bbar" later
             },
             outputTarget: "westpanel",
@@ -308,14 +309,14 @@ var app = new gxp.Viewer({
                 // ARCH (Archäologische Fachdaten)
                 group: "arch",
                 source: "local",
-                title: "raddatz_1975_beil_1",
+                title: "Raddatz 1975 Beilage 1",
                 name: "raddatz_1975_beil_1",
                 visibility: false,
                 authReq: false
             },{
                 group: "arch",
                 source: "local",
-                title: "raddatz_1975_beil_2",
+                title: "Raddatz 1975 Beilage 2",
                 name: "raddatz_1975_beil_2",   // wms name
                 visibility: false,
                 authReq: false
@@ -434,14 +435,14 @@ var app = new gxp.Viewer({
                 name: "dtm5-slope",
                 title: "DTM5 Slope",
                 visibility: false,
-                authReq: false
+                authReq: true
             },{
                 group: "dtm",
                 source: "local",
                 name: "dtm5",
                 title: "DTM5",
                 visibility: false,
-                authReq: false
+                authReq: true
             },{
                 source: "local",
                 title: "DTM5 Contours",

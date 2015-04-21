@@ -869,33 +869,18 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
     // function called within initPortal
     initLoginButton: function() {
 
-
-
         // run this when user is logged in
-
-
-        function userCookieExists(userCookie) {
-
-            function isValid(cookie) {
-                return (userCookie !== undefined && userCookie !== "unknown");
-            }
-
-            var loggedIn = false;
-            if (isValid(userCookie)) {
-                // logged in
-                loggedIn = true;
-                //console.log("already authorized!");
-            } else {
-                // not logged in
-                loggedIn = false;
-                //console.log("not authorized!");
-            }
-            return loggedIn;
+        function userCookieIsValid(cookie) {
+            return (cookie && cookie !== null && cookie !== "null");
         }
 
-        function userIsLoggedIntoGeoserver(userCookie) {
+        function userIsLoggedIntoGeoserver(cookie) {
             // sends request to login page and
             // checks if user is already logged in
+            function userStringInResponse(responseData) {
+                return (responseData.indexOf(userCookie) > -1)
+            }
+
             var isLoggedIn = false;
             $.ajax({
                 url: "/geoserver/web/",
@@ -903,17 +888,8 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
                 contentType: "application/x-www-form-urlencoded",
                 async: false,
                 success: function(data, textStatus, jqXHR){
-                    //console.log("success: " + data);
-                    //console.log("userCookieName: " + userCookie);
-                    //console.log("jqxhr.responseText: " + jqXHR.responseText);
-                    if (data.indexOf(userCookie) > -1) {    // username in responseText
-                        // already logged in
+                    if (userStringInResponse) {
                         isLoggedIn = true;
-                        //return true;
-                    } else {
-                        // not logged in
-                        isLoggedIn = false;
-                        //return false;
                     }
                 }
             }); // end ajax
@@ -925,16 +901,14 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
             id: "loginbutton"}
         );
 
-        // get webgis cookie using jQuery
+        // check status of login
         var userCookie = $.cookie("geoexplorer-user");
-
-        if (userCookieExists(userCookie) === true && userIsLoggedIntoGeoserver(userCookie) === true) {
-            // user is logged into geoserver and has a webgis cookie
+        if (userCookieIsValid(userCookie) === true && userIsLoggedIntoGeoserver(userCookie) === true) {
+            // has webgis cookie
             this.showLogoutButton(userCookie);
+
         } else {
-            // user is not logged into geoserver or has no webgis cookie
-            //$.removeCookie("geoexplorer", { path: "/" });
-            //this.setAuthorizedRoles([]);    // works
+            // no webgis cookie
             this.showLoginButton();
         }
     },
@@ -962,16 +936,15 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
             var mythis = this;
 
             // logout by trying to login with wrrong username/pw
-            function logoutUsingWrongUsernameAndPassword() {
+            function logoutUsingJSpringSecurityLogout() {
                 // sends request to login page using
                 // wrong username and password to reset JSESSION cookie
-                console.log("trying to kill auth!");
+                console.log("j_spring_security_logout!");
                 $.ajax({
-                    url: "/geoserver/j_spring_security_check",
-                    type: "POST",
-                    username: "1",
-                    password: "1",
+                    url: "/geoserver/j_spring_security_logout/",
+                    type: "GET",
                     contentType: "application/x-www-form-urlencoded",
+                    async: false,
                     success: function(){
                         console.log("killed logiN!");
                     }
@@ -984,10 +957,15 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
                 //this.clearCookieValue("JSESSIONID");    // not defined - fix!
 
                 // reset JSESSIONID
-                logoutUsingWrongUsernameAndPassword();
+                logoutUsingJSpringSecurityLogout();
                 // clear user cookie
                 //mythis.clearCookieValue("geoexplorer-user");    // not needed ???
+
+                // sets null
                 $.cookie('geoexplorer-user', null);
+
+                // not needed
+                //document.cookie = 'geoexplorer-user' + '=; expires=Thu, 01-Jan-70 00:00:01 GMT;';
 
                 // set role to unauthorized
                 mythis.setAuthorizedRoles([]);    // works
