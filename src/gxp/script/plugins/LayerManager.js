@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2008-2011 The Open Planning Project
- * 
+ *
  * Published under the GPL license.
  * See https://github.com/opengeo/gxp/raw/master/license.txt for the full text
  * of the license.
@@ -11,6 +11,7 @@
  * @require GeoExt/plugins/TreeNodeComponent.js
  * @require GeoExt/widgets/WMSLegend.js
  * @require GeoExt/widgets/VectorLegend.js
+ * @require GeoExt/widgets/LayerOpacitySlider.js
  */
 
 /** api: (define)
@@ -28,9 +29,9 @@ Ext.namespace("gxp.plugins");
  *
  *    Plugin for adding a tree of layers with their legend to a
  *    :class:`gxp.Viewer`. Also provides a context menu on layer nodes.
- */   
+ */
 /** api: example
- *  If you want to change the vendor-specific legend_options parameter that 
+ *  If you want to change the vendor-specific legend_options parameter that
  *  is sent to the WMS for GetLegendGraphic you can use ``baseAttrs`` on the
  *  ``loader`` config:
  *
@@ -48,7 +49,7 @@ Ext.namespace("gxp.plugins");
  *
  */
 gxp.plugins.LayerManager = Ext.extend(gxp.plugins.LayerTree, {
-    
+
     /** api: ptype = gxp_layermanager */
     ptype: "gxp_layermanager",
 
@@ -57,7 +58,7 @@ gxp.plugins.LayerManager = Ext.extend(gxp.plugins.LayerTree, {
      *  Text for baselayer node of layer tree (i18n).
      */
     baseNodeText: "Base Maps",
-    
+
     /** api: config[groups]
      *  ``Object`` The groups to show in the layer tree. Keys are group names,
      *  and values are either group titles or an object with ``title`` and
@@ -75,7 +76,7 @@ gxp.plugins.LayerManager = Ext.extend(gxp.plugins.LayerTree, {
      *          }
      *      }
      */
-    
+
     /** private: method[createOutputConfig] */
     createOutputConfig: function() {
         var tree = gxp.plugins.LayerManager.superclass.createOutputConfig.apply(this, arguments);
@@ -87,11 +88,10 @@ gxp.plugins.LayerManager = Ext.extend(gxp.plugins.LayerTree, {
                 ptype: "gx_treenodecomponent"
             }]
         }, this.treeConfig));
-        
-        return tree;        
+
+        return tree;
     },
-    
-    /** private: method[configureLayerNode] */
+
     configureLayerNode: function(loader, attr) {
         gxp.plugins.LayerManager.superclass.configureLayerNode.apply(this, arguments);
         var legendXType;
@@ -106,6 +106,8 @@ gxp.plugins.LayerManager = Ext.extend(gxp.plugins.LayerTree, {
             if (loader && loader.baseAttrs && loader.baseAttrs.baseParams) {
                 baseParams = loader.baseAttrs.baseParams;
             }
+
+            // original
             Ext.apply(attr, {
                 component: {
                     xtype: legendXType,
@@ -125,9 +127,23 @@ gxp.plugins.LayerManager = Ext.extend(gxp.plugins.LayerTree, {
                     cls: "legend"
                 }
             });
+
+            //custom opacity-slider by tobias kohr
+            Ext.apply(attr, {
+                component: {
+                    xtype: "gx_opacityslider",
+                    id: "opslider",
+                    layer: this.target.mapPanel.layers.getByLayer(attr.layer),
+                    //aggressive: true,
+                    width: 100,
+                    //height: 20,
+                    inverse: true,
+                    cls: "gx-opslider"      // for css referencing
+                }
+            });
         }
     }
-    
+
 });
 
 Ext.preg(gxp.plugins.LayerManager.prototype.ptype, gxp.plugins.LayerManager);

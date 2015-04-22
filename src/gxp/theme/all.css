@@ -58,7 +58,12 @@ li.commit div {
 /* position the zoom slider within map panel */
 .gx-zoomslider {
     top: 90px;
-    left: 17px
+    left: 17px;
+}
+
+/* position the opacity slider within tree panel */
+.gx-opslider {
+    margin-left: 48px;
 }
 
 /* Pan- and Zoom- Panel Styles*/

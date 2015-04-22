@@ -81,7 +81,6 @@ var app = new gxp.Viewer({
 
         // layer tree within left panel
         {
-            //ptype: "opacitylayermanager",
             ptype: "gxp_layermanager",
             //ptype: "gxp_layertree",
             outputConfig: {
