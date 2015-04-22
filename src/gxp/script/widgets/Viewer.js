@@ -203,6 +203,9 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
 
         console.log("starting auth");
 
+        // logout from geoserver if already logged in
+        this.logoutUsingJSpringSecurityLogout();
+
         // text snippets
         var loginErrorText = "Invalid username or password.";
 
@@ -913,7 +916,6 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
         }
     },
 
-
     // show this when no user is logged in
     showLoginButton: function() {
         var iconCls = 'login';
@@ -927,29 +929,24 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
         loginButton.setHandler(handler, scope);
     },
 
-    // show logout button
-    // if clicked, logout the current user by trying to login with incorrect username/pw
+    logoutUsingJSpringSecurityLogout: function() {
+        console.log("j_spring_security_logout!");
+        $.ajax({
+            url: "/geoserver/j_spring_security_logout/",
+            type: "GET",
+            contentType: "application/x-www-form-urlencoded",
+            async: false,
+            success: function(){
+                console.log("killed logiN!");
+            }
+        });
+    },
+
     showLogoutButton: function(user) {
 
         var doLogout = function() {
 
             var mythis = this;
-
-            // logout by trying to login with wrrong username/pw
-            function logoutUsingJSpringSecurityLogout() {
-                // sends request to login page using
-                // wrong username and password to reset JSESSION cookie
-                console.log("j_spring_security_logout!");
-                $.ajax({
-                    url: "/geoserver/j_spring_security_logout/",
-                    type: "GET",
-                    contentType: "application/x-www-form-urlencoded",
-                    async: false,
-                    success: function(){
-                        console.log("killed logiN!");
-                    }
-                });
-            }
 
             // logout function (called when pressing "logout")
             var callback = function() {
@@ -957,7 +954,7 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
                 //this.clearCookieValue("JSESSIONID");    // not defined - fix!
 
                 // reset JSESSIONID
-                logoutUsingJSpringSecurityLogout();
+                mythis.logoutUsingJSpringSecurityLogout();
                 // clear user cookie
                 //mythis.clearCookieValue("geoexplorer-user");    // not needed ???
 
@@ -1002,7 +999,6 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
         loginButton.setIconClass(iconCls);
         loginButton.setText(text);
         loginButton.setHandler(handler, scope);
-
     },
 
     activate: function() {
