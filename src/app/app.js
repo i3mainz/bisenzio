@@ -23,8 +23,7 @@
  * @require RowExpander.js
  */
 
-console.log("... start up boundless sdk app!");
-//console.log("usercookie: " + $.cookie("geoexplorer-user"));
+console.log("... start up boundless sdk app! 1.17");
 
 var app = new gxp.Viewer({
     portalConfig: {
@@ -241,7 +240,7 @@ var app = new gxp.Viewer({
             ptype: "gxp_wmscsource",
             //url: "/geoserver/wms",
             url: "/geoserver/bisenzio/wms",
-            version: "1.1.1",
+            //version: "1.1.1",
             title: "Local GeoServer"
         },
 

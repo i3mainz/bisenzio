@@ -332,8 +332,54 @@ GeoExt.tree.LayerNode = Ext.extend(Ext.tree.AsyncTreeNode, {
                 layer.map.setBaseLayer(layer);
             } else {
                 layer.setVisibility(checked);
+
+                //edit: demand authentication if layer
+                //has authReq property set true in app
+                var demandAuth;
+                var appLayers = app.map.layers;
+
+                // loop all layers and look for currently selected
+                console.log("inside on check");
+                
+                // function to check if user is logged in
+                function userCookieIsValid(cookie) {
+                    return (cookie && cookie !== null && cookie !== "null");
+                }
+        
+                for (var i = 0; i < appLayers.length; ++i){
+                    if (appLayers[i].title == layer.name){  // currently selected
+                        
+                        // auth required by layer
+                        if (appLayers[i].authReq) {  // authReq: true, and not logged in
+                            console.log("layer needs authentication!");
+                            
+                            // user is already authenticated
+                            //if (!app.isAuthenticated()) {  //not working yet, use workaround by checking for user cookie
+                            if (userCookieIsValid($.cookie("geoexplorer-user"))) {
+                                console.log("already authenticated! :)");
+                                demandAuth = false;
+                                //console.log(app.isAuthenticated());
+                                
+                            // user is not authenticated
+                            } else {
+                                console.log("not authentcated! :/");
+                                demandAuth = true;
+                            }
+                            
+                        // no auth required by layer
+                        } else {
+                            demandAuth = false;
+                            //console.log("authReq auf false! :/");
+                        }
+                    }
+                }
             }
             delete this._visibilityChanging;
+        }
+
+        // run auth if required
+        if (demandAuth) {
+            app.authenticate();
         }
     },
 

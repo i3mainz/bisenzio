@@ -333,14 +333,16 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
                         // set "user" cookie to entered login username
                         // to remember that user has working JSESSION ID and remains
                         // authorized and shown next to login/logout button
-                        console.log("my custom cookie: " + $.cookie("geoexplorer-user"));
+                        //console.log("my custom cookie: " + $.cookie("geoexplorer-user"));
                         mythis.setCookieValue("geoexplorer-user", formData.username);
-                        console.log("my custom cookie after login: " + $.cookie("geoexplorer-user"));
+                        //console.log("my custom cookie after login: " + $.cookie("geoexplorer-user"));
 
                         // set role to "authorized"
                         mythis.setAuthorizedRoles(["ROLE_ADMINISTRATOR"]);
-                        console.log("isAuthorized: " + mythis.isAuthorized());
-                        console.log("isAuthanticated: " + mythis.isAuthenticated());
+                        
+                        // refresh layers - workaround -> fix!
+                        console.log("refreshing layers!");
+                        window.location.reload();   
 
                         // replace "login"-button with "logout"-button and entered username
                         mythis.showLogoutButton(formData.username);
@@ -353,17 +355,10 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
                     failure: function(form, action) {
                         //Ext.Msg.alert('Failure', action.result.msg);
                         console.log("login failed!");
-
-                        mythis.clearCookieValue("JSESSIONID");
-                        console.log("my custom cookie: " + $.cookie("geoexplorer-user"));
-                        mythis.clearCookieValue("geoexplorer-user");
-                        console.log("my custom cookie after failed login: " + $.cookie("geoexplorer-user"));
-                        mythis.setAuthorizedRoles([]);
-
-                        console.log("isAuthorized: " + mythis.isAuthorized());
-                        console.log("isAuthanticated: " + mythis.isAuthenticated());
-
-                        loginPanel.buttons[0].enable(); // reactive buttons
+                        mythis.deAuthorize();   // everything but unset authorizedroles
+                        mythis.setAuthorizedRoles([]);   // works
+                        // reactive buttons
+                        loginPanel.buttons[0].enable(); 
                     }
                 });
             }
@@ -775,7 +770,6 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
     },
 
     initPortal: function() {
-
         // create additional buttons before init
         this.initAboutButton();
         this.initLoginButton();
@@ -871,7 +865,6 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
 
     // function called within initPortal
     initLoginButton: function() {
-
         // run this when user is logged in
         function userCookieIsValid(cookie) {
             return (cookie && cookie !== null && cookie !== "null");
@@ -907,11 +900,15 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
         // check status of login
         var userCookie = $.cookie("geoexplorer-user");
         if (userCookieIsValid(userCookie) === true && userIsLoggedIntoGeoserver(userCookie) === true) {
-            // has webgis cookie
+            // has webgis cookie -> is logged in
             this.showLogoutButton(userCookie);
+            //console.log("already logged in! :D: ");
+            //console.log("isAuthorized: " + this.isAuthorized());
+            //console.log("isAuthanticated: " + this.isAuthenticated());
 
         } else {
-            // no webgis cookie
+            // no webgis cookie -> not logged in
+            this.deAuthorize();     // just in case
             this.showLoginButton();
         }
     },
@@ -950,20 +947,8 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
 
             // logout function (called when pressing "logout")
             var callback = function() {
-
-                //this.clearCookieValue("JSESSIONID");    // not defined - fix!
-
-                // reset JSESSIONID
-                mythis.logoutUsingJSpringSecurityLogout();
-                // clear user cookie
-                //mythis.clearCookieValue("geoexplorer-user");    // not needed ???
-
-                // sets null
-                $.cookie('geoexplorer-user', null);
-
-                // not needed
-                //document.cookie = 'geoexplorer-user' + '=; expires=Thu, 01-Jan-70 00:00:01 GMT;';
-
+                // all but set unauthorizedroles
+                mythis.deAuthorize();
                 // set role to unauthorized
                 mythis.setAuthorizedRoles([]);    // works
 
@@ -1198,6 +1183,20 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
             }
         });
         return state;
+    },
+    /**
+     * deauthorize the application
+     */
+    deAuthorize: function() {
+        // set role to unauthorized
+        // this.setAuthorizedRoles([]);  - not working
+        
+        //this.clearCookieValue("JSESSIONID");   // not defined - fix!
+        this.logoutUsingJSpringSecurityLogout();
+
+        // clear user cookie value
+        $.cookie('geoexplorer-user', null);
+        //this.clearCookieValue("geoexplorer-user")   // original
     },
 
     /** api: method[isAuthorized]
