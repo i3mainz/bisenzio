@@ -337,15 +337,12 @@ GeoExt.tree.LayerNode = Ext.extend(Ext.tree.AsyncTreeNode, {
                 //has authReq property set true in app
                 var demandAuth;
                 var appLayers = app.map.layers;
-
-                // loop all layers and look for currently selected
-                console.log("inside on check");
-                
+          
                 // function to check if user is logged in
                 function userCookieIsValid(cookie) {
                     return (cookie && cookie !== null && cookie !== "null");
                 }
-        
+                // loop all layers and look for currently selected
                 for (var i = 0; i < appLayers.length; ++i){
                     if (appLayers[i].title == layer.name){  // currently selected
                         

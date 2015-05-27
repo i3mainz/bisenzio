@@ -23,7 +23,7 @@
  * @require RowExpander.js
  */
 
-console.log("... start up boundless sdk app! 1.17");
+console.log("... start up boundless sdk app! 1.18");
 
 var app = new gxp.Viewer({
     portalConfig: {
@@ -86,7 +86,7 @@ var app = new gxp.Viewer({
                 id: "tree",
                 title: "Layers",
                 border: true,
-                autoscroll: true
+                autoScroll: true
                 //tbar: [] // we will add buttons to "tree.bbar" later
             },
             outputTarget: "westpanel",
@@ -282,8 +282,12 @@ var app = new gxp.Viewer({
         zoom: 11,
 
         layers: [
+            
+            // CAPTURE (Erfassung)
+            // ##################
+            
+            // Punkte
             {
-                //CAPTURE (Erfassung)
                 group: "capture",
                 source: "local",
                 name: "points_g",   // wms name
@@ -291,234 +295,283 @@ var app = new gxp.Viewer({
                 visibility: false
                 //showButtonText: true,
                 //buttonText: "This is a test!"
-            },{
+            },
+            
+            // Linien
+            {
                 group: "capture",
                 source: "local",
                 name: "lines_g",
                 title: "Liniengeometrien",
                 visibility: false
-            },{
+            },
+            
+            // Flächen
+            {
                 group: "capture",
                 source: "local",
+                name: "areas_g",
                 title: "Flächengeometrien",
-                name: "areas_g",   // wms name
                 visibility: false
-            },{
-                // ARCH (Archäologische Fachdaten)
-                group: "arch",
-                source: "local",
-                title: "Raddatz 1975 Beilage 1",
-                name: "raddatz_1975_beil_1",
-                visibility: false,
-                authReq: false
-            },{
-                group: "arch",
-                source: "local",
-                title: "Raddatz 1975 Beilage 2",
-                name: "raddatz_1975_beil_2",   // wms name
-                visibility: false,
-                authReq: false
-            },{
-                group: "arch",
-                source: "local",
-                title: "Driehaus 1987 - Siedlungen",
-                name: "driehaus_1987-siedlungen",   // wms name
-                visibility: false,
-                authReq: false
-            },{
-                group: "arch",
-                source: "local",
-                title: "Rossi 2012 Abb.3",
-                name: "rossi_2012_abb3",
-                visibility: false,
-                authReq: false
-            },{
-                group: "arch",
-                source: "local",
-                title: "Ortsnamen (JGU)",
-                name: "bisenzio_place_names",
-                visibility: false,
-                authReq: false
-            },{
+            },
+            
+            // ARCH (Archäologische Fachdaten)
+            // ###############################
+            {
                 group: "arch",
                 source: "local",
                 title: "Funde (JGU)",
                 name: "bisenzio_finds",
                 visibility: false,
-                authReq: false
-            },{
-                // TOPO (Topographische Karten)
+                index: 1,
+                authReq: true
+            },
+            {
+                group: "arch",
                 source: "local",
-                title: "CTR 5K 2002/2003",
-                name: "ctr_5k",
-                group: "topo",
+                title: "Ortsnamen (JGU)",
+                name: "bisenzio_place_names",
                 visibility: false,
-                authReq: false
-            },{
+                index: 2,
+                authReq: true
+            },
+            {
+                group: "arch",
                 source: "local",
-                title: "CTR 2002",
-                name: "ctr_2002_merged",
-                group: "topo",
+                title: "Rossi 2012 Abb.3",
+                name: "rossi_2012_abb3",
                 visibility: false,
-                authReq: false
-            },{
+                authReq: true
+            },
+            {
+                group: "arch",
                 source: "local",
-                title: "Catasto Storico 1940",
-                name: "catasto_storico_1940",
-                group: "topo",
+                title: "Driehaus 1987 - Siedlungen",
+                name: "driehaus_1987-siedlungen",   // wms name
                 visibility: false,
-                authReq: false
-            },{
+                authReq: true
+            },
+            {
+                group: "arch",
                 source: "local",
-                title: "Catasto Rustico (105_08)",
-                name: "ua_lazio_105_08",
-                group: "topo",
+                title: "Raddatz 1975 Beilage 1",
+                name: "raddatz_1975_beil_1",
                 visibility: false,
-                authReq: false
-            },{
+                authReq: true
+            },
+            {
+                group: "arch",
                 source: "local",
-                title: "Catasto Rustico (105_05)",
-                name: "ua_lazio_105_05",
-                group: "topo",
+                title: "Raddatz 1975 Beilage 2",
+                name: "Raddatz 1975 Beil 2_modifiziert",   // wms name
                 visibility: false,
-                authReq: false
-            },{
+                authReq: true
+            },
+
+            // TOPO (Topographische Karten)
+            // ###############################
+            {
                 group: "topo",
                 source: "local",
                 name: "ua_lazio_103_10",
                 title: "Catasto Rustico (103_10)",
                 visibility: false,
-                authReq: false
-            },{
+                authReq: true
+            },
+            {
+                source: "local",
+                title: "Catasto Rustico (105_05)",
+                name: "ua_lazio_105_05",
+                group: "topo",
+                visibility: false,
+                authReq: true
+            },
+            {
+                source: "local",
+                title: "Catasto Rustico (105_08)",
+                name: "ua_lazio_105_08",
+                group: "topo",
+                visibility: false,
+                authReq: true
+            },
+            {
+                source: "local",
+                title: "Catasto Storico 1940",
+                name: "catasto_storico_1940",
+                group: "topo",
+                visibility: false,
+                authReq: true
+            },
+            {
+                source: "local",
+                title: "CTR 5K 2002/2003",
+                name: "ctr_5k",
+                group: "topo",
+                visibility: false,
+                authReq: true
+            },
+            {
+                source: "local",
+                title: "CTR 2002",
+                name: "ctr_2002_merged",
+                group: "topo",
+                visibility: false,
+                authReq: true
+            },
+            // CTR 5K Schema missing
 
-                // GENERAL (Allgemeines)
+            // GENERAL (Allgemeines)
+            // #####################
+                
+            // Planung 2015 missing
+            {   
+                group: "general",  
+                source: "local",
+                name: "carta_batimetrica",
+                title: "Bathymetrie",
+                visibility: false,
+                authReq: true
+            },
+            {     
                 source: "local",
                 title: "Kommunen",
                 name: "kommunen",
                 group: "general",
                 visibility: false,
-                authReq: false
-            },{
-                source: "local",
-                title: "Bathymetrie",
-                name: "carta_batimetrica",
-                group: "general",
-                visibility: false,
-                authReq: false
-            },{
-                // DTM
-                source: "local",
-                title: "DTM5 Shade",
-                name: "dtm5-shade",
-                group: "dtm",
-                visibility: false,
-                authReq: true
-            },{
-                source: "local",
-                title: "DTM5 Relief",
-                name: "dtm5-relief",
-                group: "dtm",
-                visibility: false,
-                authReq: true
-            },{
+                authReq: true  
+            },
+            
+            // DTM
+            // ######
+            {   
                 group: "dtm",
                 source: "local",
-                name: "dtm5-aspect",
-                title: "DTM5 Aspect",
+                title: "DTM5 Contours",
+                name: "dtm5-contours",
                 visibility: false,
                 authReq: true
-            },{
-                group: "dtm",
-                source: "local",
-                name: "dtm5-slope",
-                title: "DTM5 Slope",
-                visibility: false,
-                authReq: true
-            },{
+            },
+            {
                 group: "dtm",
                 source: "local",
                 name: "dtm5",
                 title: "DTM5",
                 visibility: false,
                 authReq: true
-            },{
+            },
+            {
+                group: "dtm",
                 source: "local",
-                title: "DTM5 Contours",
-                name: "dtm5-contours",
+                name: "dtm5-slope",
+                title: "DTM5 Slope",
+                visibility: false,
+                authReq: true
+            },
+            {
+                group: "dtm",
+                source: "local",
+                name: "dtm5-aspect",
+                title: "DTM5 Aspect",
+                visibility: false,
+                authReq: true
+            },
+            {
+                source: "local",
+                title: "DTM5 Relief",
+                name: "dtm5-relief",
                 group: "dtm",
                 visibility: false,
-                authReq: false
-            },{
-                // LUFT (Luftbilder)
+                authReq: true
+            },
+            {
                 source: "local",
-                title: "Royal AF 1944 - 1",
-                name: "raf_1944_1",
-                group: "luft",
+                title: "DTM5 Shade",
+                name: "dtm5-shade",
+                group: "dtm",
                 visibility: false,
-                authReq: false
-            },{
-                source: "local",
-                title: "Royal AF 1944 - 2",
-                name: "raf_1944_2",
-                group: "luft",
-                visibility: false,
-                authReq: false
-            },{
-                source: "local",
-                title: "Royal AF 1944 - 3",
-                name: "raf_1944_3",
-                group: "luft",
-                visibility: false,
-                authReq: false
-            },{
+                authReq: true
+            },
+
+            // LUFT (Luftbilder)
+            // #################
+            {
                 group: "luft",
                 source: "local",
                 name: "armee_1939",
                 title: "Armee 1939",
                 visibility: false,
-                authReq: false
-            },{
-                // ORTO (Ortophotos)
-                group: "orto",
+                authReq: true
+            },
+            {
                 source: "local",
-                title: "1988/89",
-                name: "ortophoto_1988_89",
+                title: "Royal AF 1944 - 3",
+                name: "raf_1944_3",
+                group: "luft",
                 visibility: false,
-                authReq: false
-            },{
-                group: "orto",
+                authReq: true
+            },
+            {
                 source: "local",
-                title: "1994/98",
-                name: "ortophoto_1994_98",
+                title: "Royal AF 1944 - 2",
+                name: "raf_1944_2",
+                group: "luft",
                 visibility: false,
-                authReq: false
-            },{
-                group: "orto",
+                authReq: true
+            },
+            {
                 source: "local",
-                title: "2000",
-                name: "ortophoto_2000",
+                title: "Royal AF 1944 - 1",
+                name: "raf_1944_1",
+                group: "luft",
                 visibility: false,
-                authReq: false
-            },{
-                group: "orto",
-                source: "local",
-                title: "2006",
-                name: "ortophoto_2006",
-                visibility: false,
-                authReq: false
-            },{
+                authReq: true
+            },
+
+            // ORTO (Ortophotos)
+            // #################
+            {
                 group: "orto",
                 source: "local",
                 title: "2008",
                 name: "ortophoto_2008",
                 visibility: false,
-                authReq: false
+                authReq: true
+            },
+            {
+                group: "orto",
+                source: "local",
+                title: "2006",
+                name: "ortophoto_2006",
+                visibility: false,
+                authReq: true
+            },
+            {
+                group: "orto",
+                source: "local",
+                title: "2000",
+                name: "ortophoto_2000",
+                visibility: false,
+                authReq: true
+            },
+            {
+                group: "orto",
+                source: "local",
+                title: "1994/98",
+                name: "ortophoto_1994_98",
+                visibility: false,
+                authReq: true
+            },
+            {
+                group: "orto",
+                source: "local",
+                title: "1988/89",
+                name: "ortophoto_1988_89",
+                visibility: false,
+                authReq: true
             },
 
-
             // BACKGROUND
-
-            // bing
+            // ###########
             {
                 group: "background",
                 source: "bing",
@@ -527,8 +580,6 @@ var app = new gxp.Viewer({
                 visibility: true
                 //authReq: false
             },
-
-            // empty background
             {
                 group: "background",
                 source: "ol",
