@@ -809,8 +809,7 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
         var aboutText = "About GeoExplorer";
         var aboutTitle = appInfoText;
         var aboutAbstract = "This exemplary WebGIS application presents layers of the Monte Bisenzio area. " +
-            "In addition, authorized users are able to edit layers to capture relevant archaeological information. " +
-            "An introductory tutorial can be downloaded <a href='/static/tutorial.pdf'>here</a>.";
+            "In addition, authorized users are able to edit layers to capture relevant archaeological information. ";
         var aboutContact = "For additional information please contact " +
             "<a href='mailto:axel.kunz@hs-mainz.de'</a>i3mainz</a><a> (Axel Kunz)</a>.";
 
