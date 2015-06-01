@@ -418,12 +418,25 @@ var app = new gxp.Viewer({
                 visibility: false,
                 authReq: true
             },
-            // CTR 5K Schema missing
-
+            {
+                source: "local",
+                title: "CTR 5K Schema",
+                name: "ctr_5k_schema",
+                group: "topo",
+                visibility: false,
+                authReq: true
+            },
+    
             // GENERAL (Allgemeines)
             // #####################
-                
-            // Planung 2015 missing
+            {   
+                group: "general",  
+                source: "local",
+                name: "planung_2015",
+                title: "Planung 2015",
+                visibility: false,
+                authReq: true
+            },
             {   
                 group: "general",  
                 source: "local",
@@ -462,7 +475,7 @@ var app = new gxp.Viewer({
             {
                 group: "dtm",
                 source: "local",
-                name: "dtm5-slope",
+                name: "dtm5-slope2",
                 title: "DTM5 Slope",
                 visibility: false,
                 authReq: true
