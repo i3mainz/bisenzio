@@ -23,7 +23,7 @@
  * @require RowExpander.js
  */
 
-console.log("... start up boundless sdk app! 1.18");
+console.log("... start up boundless sdk app! 1.19");
 
 var app = new gxp.Viewer({
     portalConfig: {
@@ -187,11 +187,12 @@ var app = new gxp.Viewer({
 
             // changes tools position
             actionTarget: {
-                target: "map.tbar", // not needed
+                target: "map.tbar", // default
                 index: 7
-            }
+            },
+            format: "grid"  // fixes output
         },
-
+        
         // Messen
         {
             ptype: "gxp_measure",
