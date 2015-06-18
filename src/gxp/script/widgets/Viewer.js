@@ -342,7 +342,7 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
                         
                         // refresh layers - workaround -> fix!
                         console.log("refreshing layers!");
-                        window.location.reload();   
+                        location.reload();   
 
                         // replace "login"-button with "logout"-button and entered username
                         mythis.showLogoutButton(formData.username);
@@ -865,6 +865,7 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
     // function called within initPortal
     initLoginButton: function() {
         // run this when user is logged in
+        
         function userCookieIsValid(cookie) {
             return (cookie && cookie !== null && cookie !== "null");
         }
@@ -873,7 +874,11 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
             // sends request to login page and
             // checks if user is already logged in
             function userStringInResponse(responseData) {
-                return (responseData.indexOf(userCookie) > -1)
+                var correct_string = '<span class="username">Logged in as <span>' + userCookie + '</span></span>';
+                //console.log(correct_string);
+                console.log("indexOf");
+                console.log(responseData.indexOf(correct_string));
+                return (responseData.indexOf(correct_string) > -1);
             }
 
             var isLoggedIn = false;
@@ -883,10 +888,20 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
                 contentType: "application/x-www-form-urlencoded",
                 async: false,
                 success: function(data, textStatus, jqXHR){
-                    if (userStringInResponse) {
+                    // username string in response data
+                    if (userStringInResponse(data)) {
+                        //console.log(data);
+                        console.log("logged into geoserver!");
                         isLoggedIn = true;
+                    } 
+                    else {
+                        console.log("not logged into geoserver!");
                     }
+                },
+                failure: function() {
+                    console.log("request to geoserver failed!");
                 }
+                
             }); // end ajax
             return isLoggedIn;
         }

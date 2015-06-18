@@ -23,7 +23,7 @@
  * @require RowExpander.js
  */
 
-console.log("... start up boundless sdk app! 1.19");
+console.log("... start up boundless sdk app! 1.25");
 
 var app = new gxp.Viewer({
     portalConfig: {
