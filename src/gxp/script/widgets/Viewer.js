@@ -254,7 +254,11 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
                 read: function(response) {
                     var success = false;
                     var records = [];
-
+                    
+                    function isInResponse(response, text_snippet) {
+                        return response["responseText"].indexOf(text_snippet) > -1
+                    }
+                    
                     // check if string "Invalid username/password combination"
                     // appears in response body
                     // todo: replace by checking redirect-url to end with error=true
@@ -263,8 +267,7 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
                                   "Benutzername und Kennwort.";
                     var engText = "Invalid username/password combination.";
 
-                    if (response["responseText"].indexOf(gerText) > -1 ||
-                        response["responseText"].indexOf(engText) > -1 ) {
+                    if (isInResponse(response, gerText) || isInResponse(response, engText)) {
                         // login failed
                         //success = false;
                         var loginErrorText = "Invalid username or password.";
@@ -874,11 +877,15 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
             // sends request to login page and
             // checks if user is already logged in
             function userStringInResponse(responseData) {
-                var correct_string = '<span class="username">Logged in as <span>' + userCookie + '</span></span>';
-                //console.log(correct_string);
-                console.log("indexOf");
-                console.log(responseData.indexOf(correct_string));
-                return (responseData.indexOf(correct_string) > -1);
+                var success;
+                var eng_string = '<span class="username">Logged in as <span>' + userCookie + '</span></span>';
+                var de_string = '<span class="username">Angemeldet als <span>' + userCookie + '</span></span>';
+                if (responseData.indexOf(eng_string) > -1) {
+                    success = true;
+                } else if (responseData.indexOf(de_string) > -1) {
+                    success = true;
+                }
+                return success;
             }
 
             var isLoggedIn = false;
@@ -968,7 +975,8 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
 
                 // refresh window
                 console.log("refreshing window ...");
-                window.location.reload();
+                //window.location.reload();
+                location.reload();
             }
 
             // confirm logout message window
