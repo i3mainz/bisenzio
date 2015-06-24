@@ -345,6 +345,7 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
                         
                         // refresh layers - workaround -> fix!
                         console.log("refreshing layers!");
+                        //mythis.activate();
                         location.reload();   
 
                         // replace "login"-button with "logout"-button and entered username
@@ -1009,6 +1010,7 @@ gxp.Viewer = Ext.extend(Ext.util.Observable, {
     },
 
     activate: function() {
+        console.log("-> activate!");
         // initialize tooltips
         Ext.QuickTips.init();
 

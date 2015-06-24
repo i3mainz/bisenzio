@@ -20,10 +20,11 @@
  * @require plugins/Zoom.js
  * @require plugins/ZoomToExtent.js
  * @require plugins/ZoomToLayerExtent.js
+ * @require custom_classes/LayerManager_slider.js
  * @require RowExpander.js
  */
 
-console.log("... start up boundless sdk app! 1.28");
+console.log("... start up boundless sdk app! 1.31");
 
 var app = new gxp.Viewer({
     portalConfig: {
@@ -80,7 +81,7 @@ var app = new gxp.Viewer({
 
         // layer tree within left panel
         {
-            ptype: "gxp_layermanager",
+            ptype: "gxp_layermanager_slider",
             //ptype: "gxp_layertree",
             outputConfig: {
                 id: "tree",
