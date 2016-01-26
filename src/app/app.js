@@ -4,7 +4,6 @@
  * @require widgets/Viewer.js
  * @require widgets/ScaleOverlay.js
  * @require plugins/AddLayers.js
- * @require plugins/BingSource.js
  * @require plugins/FeatureManager.js
  * @require plugins/FeatureEditor.js
  * @require plugins/LayerManager.js
@@ -14,6 +13,8 @@
  * @require plugins/NavigationHistory.js
  * @require plugins/OLSource.js
  * @require plugins/OSMSource.js
+ * @require plugins/MapQuestSource.js
+ * @require plugins/GoogleSource.js
  * @require plugins/RemoveLayer.js
  * @require plugins/WMSCSource.js
  * @require plugins/WMSGetFeatureInfo.js
@@ -24,7 +25,7 @@
  * @require RowExpander.js
  */
 
-console.log("... start up boundless sdk app! 1.31");
+console.log("... start up boundless sdk app! 1.32");
 
 var app = new gxp.Viewer({
     portalConfig: {
@@ -160,7 +161,8 @@ var app = new gxp.Viewer({
 
         // Navigation tool (move tool)
         {
-            ptype: "gxp_navigation"
+            ptype: "gxp_navigation",
+            toggleGroup: "navigation"        // radio-style for all tools in this group (only one active at a time)
         },
 
         // zoom to max extent
@@ -173,6 +175,7 @@ var app = new gxp.Viewer({
         {
             ptype: "gxp_zoom",
             showZoomBoxAction: true, // adds "Zoom by dragging"
+            toggleGroup: "navigation",
             actionTarget: "map.tbar"
         },
 
@@ -247,29 +250,29 @@ var app = new gxp.Viewer({
         },
 
         // OpenStreetMap
-        osm: {
+        "osm": {
             ptype: "gxp_osmsource"
         },
 
         // Bing
-        bing: {
+        /*bing: {
             ptype: "gxp_bingsource"
-        },
+        },*/
 
         // OpenLayers
         ol: {
             ptype: "gxp_olsource"
-        }
+        },
 
         // MapQuest
-        // mapquest: {
-        //     ptype: "gxp_mapquestsource"
-        // },
+        mapquest: {
+            ptype: "gxp_mapquestsource"
+        }
 
         // Google
-        // google: {
-        //     ptype: "gxp_googlesource"
-        // }
+        /*google: {
+            ptype: "gxp_googlesource"
+        }*/
     },
 
     // map properties
@@ -580,13 +583,28 @@ var app = new gxp.Viewer({
                     visibility: false
                 }]
             },
-            {
+            /*{
                 group: "background",
-                source: "bing",
-                name: "Aerial", // "Aerial", "Road", "ArealWithLabels"
-                title: "Bing Aerial",
+                source: "mapquest",
+                name: "osm", // "Aerial", "Road", "ArealWithLabels"
+                title: "MapQuest Aerial",
                 visibility: true
                 //authReq: false
+            },*/
+            /*{
+                group: "background",
+                source: "google",
+                name: "TERRAIN",
+                title: "Google Terrain",
+                visibility: true
+            },*/
+            {
+                group: "background",
+                source: "osm",
+                name: "osmarander",
+                //name: "TERRAIN",
+                title: "OSM",
+                visibility: true
             }
 
         ],
