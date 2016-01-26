@@ -22,10 +22,11 @@
  * @require plugins/ZoomToExtent.js
  * @require plugins/ZoomToLayerExtent.js
  * @require custom_classes/LayerManager_slider.js
+ * @require custom_classes/NewBingSource.js
  * @require RowExpander.js
  */
 
-console.log("... start up boundless sdk app! 1.32");
+console.log("... start up boundless sdk app! 1.33");
 
 var app = new gxp.Viewer({
     portalConfig: {
@@ -250,24 +251,24 @@ var app = new gxp.Viewer({
         },
 
         // OpenStreetMap
-        "osm": {
+        /*osm: {
             ptype: "gxp_osmsource"
-        },
+        },*/
 
         // Bing
-        /*bing: {
-            ptype: "gxp_bingsource"
-        },*/
+        bing: {
+            ptype: "gxp_newbingsource"  // newbingsource extends gxp_bingsource
+        },
 
         // OpenLayers
         ol: {
             ptype: "gxp_olsource"
-        },
+        }
 
         // MapQuest
-        mapquest: {
+        /*"mapquest": {
             ptype: "gxp_mapquestsource"
-        }
+        },*/
 
         // Google
         /*google: {
@@ -296,32 +297,28 @@ var app = new gxp.Viewer({
                 name: "ortophoto_1988_89",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 group: "orto",
                 source: "local",
                 title: "1994/98",
                 name: "ortophoto_1994_98",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 group: "orto",
                 source: "local",
                 title: "2000",
                 name: "ortophoto_2000",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 group: "orto",
                 source: "local",
                 title: "2006",
                 name: "ortophoto_2006",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 group: "orto",
                 source: "local",
                 title: "2008",
@@ -338,24 +335,21 @@ var app = new gxp.Viewer({
                 group: "luft",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 source: "local",
                 title: "Royal AF 1944 - 2",
                 name: "raf_1944_2",
                 group: "luft",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 source: "local",
                 title: "Royal AF 1944 - 3",
                 name: "raf_1944_3",
                 group: "luft",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 group: "luft",
                 source: "local",
                 name: "armee_1939",
@@ -372,40 +366,35 @@ var app = new gxp.Viewer({
                 group: "dtm",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 source: "local",
                 title: "DTM5 Relief",
                 name: "dtm5-relief",
                 group: "dtm",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 group: "dtm",
                 source: "local",
                 name: "dtm5-aspect",
                 title: "DTM5 Aspect",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 group: "dtm",
                 source: "local",
                 name: "dtm5-slope2",
                 title: "DTM5 Slope",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 group: "dtm",
                 source: "local",
                 name: "dtm5",
                 title: "DTM5",
                 visibility: false,
                 authReq: true
-            },
-            {   
+            },{   
                 group: "dtm",
                 source: "local",
                 title: "DTM5 Contours",
@@ -422,16 +411,14 @@ var app = new gxp.Viewer({
                 group: "general",
                 visibility: false,
                 authReq: true  
-            },
-            {   
+            },{   
                 group: "general",  
                 source: "local",
                 name: "carta_batimetrica",
                 title: "Bathymetrie",
                 visibility: false,
                 authReq: true
-            },
-            {   
+            },{   
                 group: "general",  
                 source: "local",
                 name: "planung_2015",
@@ -448,48 +435,42 @@ var app = new gxp.Viewer({
                 group: "topo",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 source: "local",
                 title: "CTR 5K 2002/2003",
                 name: "ctr_5k",
                 group: "topo",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 source: "local",
                 title: "CTR 2002",
                 name: "ctr_2002_merged",
                 group: "topo",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 source: "local",
                 title: "Catasto Storico 1940",
                 name: "catasto_storico_1940",
                 group: "topo",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 source: "local",
                 title: "Catasto Rustico (105_08)",
                 name: "ua_lazio_105_08",
                 group: "topo",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 source: "local",
                 title: "Catasto Rustico (105_05)",
                 name: "ua_lazio_105_05",
                 group: "topo",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 group: "topo",
                 source: "local",
                 name: "ua_lazio_103_10",
@@ -506,40 +487,35 @@ var app = new gxp.Viewer({
                 name: "Raddatz 1975 Beil 2_modifiziert",   // wms name
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 group: "arch",
                 source: "local",
                 title: "Raddatz 1975 Beilage 1",
                 name: "raddatz_1975_beil_1",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 group: "arch",
                 source: "local",
                 title: "Driehaus 1987 - Siedlungen",
                 name: "driehaus_1987-siedlungen",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 group: "arch",
                 source: "local",
                 title: "Rossi 2012 Abb.3",
                 name: "rossi_2012_abb3",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 group: "arch",
                 source: "local",
                 title: "Ortsnamen (JGU)",
                 name: "bisenzio_place_names",
                 visibility: false,
                 authReq: true
-            },
-            {
+            },{
                 group: "arch",
                 source: "local",
                 title: "Funde (JGU)",
@@ -555,15 +531,13 @@ var app = new gxp.Viewer({
                 name: "areas_g",
                 title: "Flächengeometrien",
                 visibility: false
-            },
-            {
+            },{
                 group: "capture",
                 source: "local",
                 name: "lines_g",
                 title: "Liniengeometrien",
                 visibility: false
-            },
-            {
+            },{
                 group: "capture",
                 source: "local",
                 name: "points_g",   // wms name
@@ -574,7 +548,7 @@ var app = new gxp.Viewer({
             },
             
             // BACKGROUND
-            {
+           {
                 group: "background",
                 source: "ol",
                 //fixed: true,  // prevents dragging
@@ -582,31 +556,41 @@ var app = new gxp.Viewer({
                 args: ["None", {
                     visibility: false
                 }]
-            },
-            /*{
+            },{
+                group: "background",
+                source: "bing",
+                name: "Aerial", // "Aerial", "Road", "ArealWithLabels"
+                title: "Bing Aerial",
+                visibility: true
+                //authReq: false
+            },{
+                group: "background",
+                source: "bing",
+                name: "Road", // "Aerial", "Road", "ArealWithLabels"
+                title: "Bing Road",
+                visibility: false
+                //authReq: false
+            }/*,{
                 group: "background",
                 source: "mapquest",
-                name: "osm", // "Aerial", "Road", "ArealWithLabels"
+                name: "Aerial", // "Aerial", "Road", "ArealWithLabels"
                 title: "MapQuest Aerial",
                 visibility: true
                 //authReq: false
-            },*/
-            /*{
+            }*//*,{
                 group: "background",
                 source: "google",
                 name: "TERRAIN",
                 title: "Google Terrain",
                 visibility: true
-            },*/
-            {
+            }*//*,{
                 group: "background",
                 source: "osm",
                 name: "osmarander",
                 //name: "TERRAIN",
                 title: "OSM",
                 visibility: true
-            }
-
+            }*/
         ],
 
         // TOOLS MAP OVERLAY

@@ -89,7 +89,7 @@ gxp.plugins.BingSource = Ext.extend(gxp.plugins.LayerSource, {
      *  API key generated from http://bingmapsportal.com/ for your domain.
      */
     apiKey: "AqTGBsziZHIJYYxgivLBf0hVdrAk9mWO5cQcb8Yux8sW5M8c8opEC2lZqKR1ZZXf",
-    
+
     /** api: method[createStore]
      *
      *  Creates a store of layer records.  Fires "ready" when store is loaded.
