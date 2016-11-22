@@ -1,7 +1,6 @@
 /**
  * Add all your dependencies here.
  *
- * @require widgets/Viewer.js
  * @require widgets/ScaleOverlay.js
  * @require plugins/AddLayers.js
  * @require plugins/FeatureManager.js
@@ -21,14 +20,15 @@
  * @require plugins/Zoom.js
  * @require plugins/ZoomToExtent.js
  * @require plugins/ZoomToLayerExtent.js
- * @require custom_classes/LayerManager_slider.js
+ * @require custom_classes/NewViewer.js
+ * @require custom_classes/NewLayerManager.js
  * @require custom_classes/NewBingSource.js
  * @require RowExpander.js
  */
 
-console.log("... start up boundless sdk app! 1.33");
+console.log("... start up boundless sdk app! 1.34");
 
-var app = new gxp.Viewer({
+var app = new gxp.NewViewer({  // gxp.NewViewer extends gxp.Viewer
     portalConfig: {
         layout: "border",
         region: "center",
@@ -68,7 +68,6 @@ var app = new gxp.Viewer({
                 width: 200,
                 split: true, // dragable border
                 collapseMode: "mini" // clickable border
-                //hideCollapseTool: true
             }
         ],
         bbar: {id: "mybbar"}
@@ -83,8 +82,7 @@ var app = new gxp.Viewer({
 
         // layer tree within left panel
         {
-            ptype: "gxp_layermanager_slider",
-            //ptype: "gxp_layertree",
+            ptype: "gxp_newlayermanager",  // extends gxp_layermanager
             outputConfig: {
                 id: "tree",
                 title: "Layers",
@@ -136,8 +134,6 @@ var app = new gxp.Viewer({
         },
 
         // TOOLS IN NORTH BAR
-
-
         {
             // about-button
             actions: ["aboutbutton"],   // defined in viewer.js initPortal
@@ -189,22 +185,17 @@ var app = new gxp.Viewer({
         // object info
         {
             ptype: "gxp_wmsgetfeatureinfo",
-
-            // changes tools position
-            actionTarget: {
+            actionTarget: {  // change tool postion
                 target: "map.tbar", // default
                 index: 7
             },
             format: "grid"  // fixes output
         },
-        
+
         // Messen
         {
             ptype: "gxp_measure",
-            //toggleGroup: "interaction",
-            controlOptions: {
-                immediate: true
-            },
+            controlOptions: { immediate: true },
             showButtonText: false,
             actionTarget: "map.tbar"
         },
@@ -228,11 +219,7 @@ var app = new gxp.Viewer({
             actionTarget: "map.tbar"
         },
 
-
-        // LAYERTREE CONTEXT TOOLS
-        // ------------------------
-
-        // Zoom to layer extent
+        // Zoom to layer extent (layertree context)
         {
             ptype: "gxp_zoomtolayerextent",
             actionTarget: ["tree.contextMenu"]
@@ -244,16 +231,9 @@ var app = new gxp.Viewer({
         // local geoserver
         local: {
             ptype: "gxp_wmscsource",
-            //url: "/geoserver/wms",
             url: "/geoserver/bisenzio/wms",
-            //version: "1.1.1",
             title: "Local GeoServer"
         },
-
-        // OpenStreetMap
-        /*osm: {
-            ptype: "gxp_osmsource"
-        },*/
 
         // Bing
         bing: {
@@ -264,16 +244,6 @@ var app = new gxp.Viewer({
         ol: {
             ptype: "gxp_olsource"
         }
-
-        // MapQuest
-        /*"mapquest": {
-            ptype: "gxp_mapquestsource"
-        },*/
-
-        // Google
-        /*google: {
-            ptype: "gxp_googlesource"
-        }*/
     },
 
     // map properties
@@ -326,7 +296,7 @@ var app = new gxp.Viewer({
                 visibility: false,
                 authReq: true
             },
-            
+
             // LUFT (Luftbilder)
             {
                 source: "local",
@@ -357,7 +327,7 @@ var app = new gxp.Viewer({
                 visibility: false,
                 authReq: true
             },
-            
+
             // DTM
             {
                 source: "local",
@@ -394,7 +364,7 @@ var app = new gxp.Viewer({
                 title: "DTM5",
                 visibility: false,
                 authReq: true
-            },{   
+            },{
                 group: "dtm",
                 source: "local",
                 title: "DTM5 Contours",
@@ -402,31 +372,31 @@ var app = new gxp.Viewer({
                 visibility: false,
                 authReq: true
             },
-            
+
             // GENERAL (Allgemeines)
-            {     
+            {
                 source: "local",
                 title: "Kommunen",
                 name: "kommunen",
                 group: "general",
                 visibility: false,
-                authReq: true  
-            },{   
-                group: "general",  
+                authReq: true
+            },{
+                group: "general",
                 source: "local",
                 name: "carta_batimetrica",
                 title: "Bathymetrie",
                 visibility: false,
                 authReq: true
-            },{   
-                group: "general",  
+            },{
+                group: "general",
                 source: "local",
                 name: "planung_2015",
                 title: "Planung 2015",
                 visibility: false,
                 authReq: true
             },
-            
+
             // TOPO (Topographische Karten)
             {
                 source: "local",
@@ -478,7 +448,7 @@ var app = new gxp.Viewer({
                 visibility: false,
                 authReq: true
             },
-            
+
             // ARCH (Archäologische Fachdaten)
             {
                 group: "arch",
@@ -523,7 +493,7 @@ var app = new gxp.Viewer({
                 visibility: false,
                 authReq: true
             },
-            
+
             // CAPTURE (Erfassung)
             {
                 group: "capture",
@@ -543,12 +513,10 @@ var app = new gxp.Viewer({
                 name: "points_g",   // wms name
                 title: "Punkte",    // display name
                 visibility: false
-                //showButtonText: true,
-                //buttonText: "This is a test!"
             },
-            
-            // BACKGROUND
-           {
+
+            // base layers
+            {
                 group: "background",
                 source: "ol",
                 //fixed: true,  // prevents dragging
@@ -570,45 +538,19 @@ var app = new gxp.Viewer({
                 title: "Bing Road",
                 visibility: false
                 //authReq: false
-            }/*,{
-                group: "background",
-                source: "mapquest",
-                name: "Aerial", // "Aerial", "Road", "ArealWithLabels"
-                title: "MapQuest Aerial",
-                visibility: true
-                //authReq: false
-            }*//*,{
-                group: "background",
-                source: "google",
-                name: "TERRAIN",
-                title: "Google Terrain",
-                visibility: true
-            }*//*,{
-                group: "background",
-                source: "osm",
-                name: "osmarander",
-                //name: "TERRAIN",
-                title: "OSM",
-                visibility: true
-            }*/
+            }
+
         ],
 
-        // TOOLS MAP OVERLAY
-        // ------------------
+        // map overlay tools
         items: [
-
-            // zoomslider
             {
                 xtype: "gx_zoomslider",
                 vertical: true,
                 height: 100
-            },
-
-            // scale overlay
-            {
+            },{
                 xtype: "gxp_scaleoverlay"
             }
         ]
     }
-
 });

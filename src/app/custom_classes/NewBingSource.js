@@ -17,8 +17,10 @@
 
 /** api: (extends)
  *  plugins/BingSource.js
+ *
+ *    GXP Plugin that extends the GXP BingSource by  
+ *    overwriting the Bing apiKey
  */
-
 Ext.namespace("gxp.plugins");
 
 /**

@@ -127,20 +127,6 @@ gxp.plugins.LayerManager = Ext.extend(gxp.plugins.LayerTree, {
                     cls: "legend"
                 }
             });
-
-            //custom opacity-slider by tobias kohr
-            Ext.apply(attr, {
-                component: {
-                    xtype: "gx_opacityslider",
-                    id: "opslider",
-                    layer: this.target.mapPanel.layers.getByLayer(attr.layer),
-                    //aggressive: true,
-                    width: 100,
-                    //height: 20,
-                    inverse: true,
-                    cls: "gx-opslider"      // for css referencing
-                }
-            });
         }
     }
 
